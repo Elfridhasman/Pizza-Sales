@@ -37,20 +37,18 @@ FROM orders LEFT JOIN order_details
 GROUP BY MONTH(orders.date)
 ORDER BY quantity DESC;
 
--- sum pizza price based on order
+-- sum pizza price based on orders detail
 SELECT 
-	SUM(pizzas.price) AS price
-FROM orders 
-	LEFT JOIN order_details 
-		ON orders.order_id = order_details.order_id
+	SUM(pizzas.price * order_details.quantity) AS price
+FROM order_details 
 	LEFT JOIN pizzas 
-		ON pizzas.pizza_id = order_details.pizza_id;
+		ON order_details.pizza_id = pizzas.pizza_id
 
 -- sum quantity, sum price group by month
 SELECT 
 	MONTH(orders.date) AS 'month',
 	SUM(order_details.quantity) AS quantity,
-	SUM(pizzas.price) AS price
+	SUM(pizzas.price * order_details.quantity) AS price
 FROM orders 
 	LEFT JOIN order_details 
 		ON orders.order_id = order_details.order_id
@@ -77,7 +75,7 @@ ORDER BY quantity DESC;
 -- select top 5 pizza name with the most revenue based on orders table
 SELECT TOP 5 
 	pizza_types.name,
-	SUM(pizzas.price) AS price
+	SUM(pizzas.price * order_details.quantity) AS price
 FROM orders 
 	LEFT JOIN order_details 
 		ON orders.order_id = order_details.order_id
